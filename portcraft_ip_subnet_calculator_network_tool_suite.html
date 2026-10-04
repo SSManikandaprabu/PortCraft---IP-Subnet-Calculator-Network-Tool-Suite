@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortCraft - IP Subnet Calculator & Network Tool Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(16, 185, 129, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white">
+
+    <header class="w-full border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-brand-600 to-emerald-400 p-2.5 rounded-xl shadow-lg shadow-brand-500/20">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">PortCraft</h1>
+                    <p class="text-[11px] text-slate-400">Network Subnet & IP Toolkit Suite</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="switchTab('subnet')" id="tab-subnet-btn" class="px-3.5 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold transition">Subnet Calculator</button>
+                <button onclick="switchTab('ports')" id="tab-ports-btn" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition border border-slate-700">Port Directory</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full space-y-6">
+        
+        <!-- Tab 1: Subnet Calculator -->
+        <div id="section-subnet" class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            
+            <!-- Left 1 Column: Input Form -->
+            <div class="bg-slate-900/80 border border-slate-800/80 rounded-3xl p-6 backdrop-blur shadow-xl space-y-5">
+                <div class="border-b border-slate-800/80 pb-3">
+                    <h3 class="text-sm font-bold text-white">IPv4 CIDR Subnet Calculator</h3>
+                    <p class="text-xs text-slate-400">Enter IP address and subnet mask</p>
+                </div>
+
+                <form onsubmit="calculateSubnet(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">IP Address</label>
+                        <input type="text" id="ip-input" required value="192.168.1.10" placeholder="192.168.1.1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 font-mono text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Subnet CIDR / Mask</label>
+                        <select id="cidr-input" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 font-mono text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                            <option value="30">/30 (2 usable hosts)</option>
+                            <option value="29">/29 (6 usable hosts)</option>
+                            <option value="28">/28 (14 usable hosts)</option>
+                            <option value="27">/27 (30 usable hosts)</option>
+                            <option value="26">/26 (62 usable hosts)</option>
+                            <option value="25">/25 (126 usable hosts)</option>
+                            <option value="24" selected>/24 (254 usable hosts)</option>
+                            <option value="23">/23 (510 usable hosts)</option>
+                            <option value="22">/22 (1,022 usable hosts)</option>
+                            <option value="20">/20 (4,094 usable hosts)</option>
+                            <option value="16">/16 (65,534 usable hosts)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-brand-600/20">
+                        Calculate Subnet
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right 2 Columns: Results Grid -->
+            <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800/80 rounded-3xl p-6 backdrop-blur shadow-xl space-y-6">
+                <div class="border-b border-slate-800/80 pb-3 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-white">Subnet Calculation Results</h3>
+                    <span id="result-cidr-badge" class="px-2.5 py-1 bg-brand-500/10 text-brand-400 font-mono text-xs rounded-xl border border-brand-500/30">/24</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+                    <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-1">
+                        <span class="text-slate-500 text-[10px] uppercase font-semibold">Network Address</span>
+                        <p id="res-network" class="text-sm font-bold text-white">--</p>
+                    </div>
+                    <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-1">
+                        <span class="text-slate-500 text-[10px] uppercase font-semibold">Broadcast Address</span>
+                        <p id="res-broadcast" class="text-sm font-bold text-white">--</p>
+                    </div>
+                    <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-1">
+                        <span class="text-slate-500 text-[10px] uppercase font-semibold">Subnet Mask</span>
+                        <p id="res-mask" class="text-sm font-bold text-brand-400">--</p>
+                    </div>
+                    <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-1">
+                        <span class="text-slate-500 text-[10px] uppercase font-semibold">Total Usable Hosts</span>
+                        <p id="res-hosts" class="text-sm font-bold text-emerald-400">--</p>
+                    </div>
+                    <div class="sm:col-span-2 p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-1">
+                        <span class="text-slate-500 text-[10px] uppercase font-semibold">Usable Host IP Range</span>
+                        <p id="res-range" class="text-sm font-bold text-cyan-400">--</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tab 2: Common Port Directory -->
+        <div id="section-ports" class="hidden space-y-6">
+            <div class="bg-slate-900/80 border border-slate-800/80 rounded-3xl p-6 backdrop-blur shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-white">Common Network Ports Directory</h3>
+                        <p class="text-xs text-slate-400">Well-known TCP/UDP port reference</p>
+                    </div>
+                    <input type="text" id="port-search" oninput="filterPorts()" placeholder="Search port or protocol..." class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 w-full sm:w-64">
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-[11px] text-slate-400">
+                                <th class="py-3 px-3">Port</th>
+                                <th class="py-3 px-3">Protocol</th>
+                                <th class="py-3 px-3">Service / Application</th>
+                                <th class="py-3 px-3">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ports-tbody" class="divide-y divide-slate-800/60 text-slate-300">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-brand-600 text-white px-6 py-3 rounded-2xl shadow-2xl text-xs font-semibold border border-emerald-400/30 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        Notification message
+    </div>
+
+    <script>
+        const commonPorts = [
+            { port: 21, proto: 'TCP', service: 'FTP', desc: 'File Transfer Protocol Control' },
+            { port: 22, proto: 'TCP/UDP', service: 'SSH', desc: 'Secure Shell remote login' },
+            { port: 23, proto: 'TCP', service: 'Telnet', desc: 'Unencrypted text communications' },
+            { port: 25, proto: 'TCP', service: 'SMTP', desc: 'Simple Mail Transfer Protocol' },
+            { port: 53, proto: 'TCP/UDP', service: 'DNS', desc: 'Domain Name System' },
+            { port: 80, proto: 'TCP', service: 'HTTP', desc: 'Hypertext Transfer Protocol (Web)' },
+            { port: 110, proto: 'TCP', service: 'POP3', desc: 'Post Office Protocol version 3' },
+            { port: 143, proto: 'TCP', service: 'IMAP', desc: 'Internet Message Access Protocol' },
+            { port: 443, proto: 'TCP', service: 'HTTPS', desc: 'HTTP Secure over TLS/SSL' },
+            { port: 465, proto: 'TCP', service: 'SMTPS', desc: 'SMTP over SSL' },
+            { port: 587, proto: 'TCP', service: 'SMTP', desc: 'SMTP message submission' },
+            { port: 993, proto: 'TCP', service: 'IMAPS', desc: 'IMAP over SSL' },
+            { port: 995, proto: 'TCP', service: 'POP3S', desc: 'POP3 over SSL' },
+            { port: 3306, proto: 'TCP', service: 'MySQL', desc: 'MySQL Database Server' },
+            { port: 5432, proto: 'TCP', service: 'PostgreSQL', desc: 'PostgreSQL Database Server' },
+            { port: 6379, proto: 'TCP', service: 'Redis', desc: 'Redis In-Memory Data Store' },
+            { port: 27017, proto: 'TCP', service: 'MongoDB', desc: 'MongoDB NoSQL Database' }
+        ];
+
+        function initApp() {
+            renderPorts(commonPorts);
+            calculateSubnet();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function switchTab(tab) {
+            const subBtn = document.getElementById('tab-subnet-btn');
+            const portBtn = document.getElementById('tab-ports-btn');
+            const subSec = document.getElementById('section-subnet');
+            const portSec = document.getElementById('section-ports');
+
+            if (tab === 'subnet') {
+                subBtn.className = "px-3.5 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold transition";
+                portBtn.className = "px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition border border-slate-700";
+                subSec.classList.remove('hidden');
+                portSec.classList.add('hidden');
+            } else {
+                portBtn.className = "px-3.5 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold transition";
+                subBtn.className = "px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition border border-slate-700";
+                portSec.classList.remove('hidden');
+                subSec.classList.add('hidden');
+            }
+        }
+
+        function ipToInt(ip) {
+            return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+        }
+
+        function intToIp(int) {
+            return [(int >>> 24) & 255, (int >>> 16) & 255, (int >>> 8) & 255, int & 255].join('.');
+        }
+
+        function calculateSubnet(e) {
+            if (e) e.preventDefault();
+            const ipStr = document.getElementById('ip-input').value.trim();
+            const cidr = parseInt(document.getElementById('cidr-input').value, 10);
+
+            const ipInt = ipToInt(ipStr);
+            const maskInt = cidr === 0 ? 0 : (~((1 << (32 - cidr)) - 1)) >>> 0;
+            const netInt = (ipInt & maskInt) >>> 0;
+            const broadcastInt = (netInt | ~maskInt) >>> 0;
+
+            const usableStart = cidr >= 31 ? netInt : netInt + 1;
+            const usableEnd = cidr >= 31 ? broadcastInt : broadcastInt - 1;
+            const totalHosts = cidr >= 31 ? (cidr === 31 ? 2 : 1) : Math.pow(2, 32 - cidr) - 2;
+
+            document.getElementById('result-cidr-badge').textContent = `/${cidr}`;
+            document.getElementById('res-network').textContent = intToIp(netInt);
+            document.getElementById('res-broadcast').textContent = intToIp(broadcastInt);
+            document.getElementById('res-mask').textContent = intToIp(maskInt);
+            document.getElementById('res-hosts').textContent = totalHosts.toLocaleString('en-US');
+            document.getElementById('res-range').textContent = `${intToIp(usableStart)} — ${intToIp(usableEnd)}`;
+
+            showToast('Subnet calculated successfully!');
+        }
+
+        function renderPorts(ports) {
+            const tbody = document.getElementById('ports-tbody');
+            tbody.innerHTML = ports.map(p => `
+                <tr class="hover:bg-slate-800/40 transition">
+                    <td class="py-3 px-3 font-bold text-brand-400">${p.port}</td>
+                    <td class="py-3 px-3 text-slate-400">${p.proto}</td>
+                    <td class="py-3 px-3 font-bold text-white">${p.service}</td>
+                    <td class="py-3 px-3 text-slate-400">${p.desc}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filterPorts() {
+            const query = document.getElementById('port-search').value.toLowerCase();
+            const filtered = commonPorts.filter(p => p.port.toString().includes(query) || p.service.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+            renderPorts(filtered);
+        }
+
+        window.onload = () => {
+            initApp();
+        };
+    </script>
+</body>
+</html>
